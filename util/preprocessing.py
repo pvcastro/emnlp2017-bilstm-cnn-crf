@@ -84,18 +84,22 @@ def perpareDataset(embeddingsPath, datasetFiles, frequencyThresholdUnknownTokens
     embeddings = []
     
     embeddingsIn = gzip.open(embeddingsPath, "rt") if embeddingsPath.endswith('.gz') else open(embeddingsPath, encoding="utf8")
-    
+
     embeddingsDimension = None
-    
+
+    emb_invalid = 0
     for line in embeddingsIn:
         split = line.rstrip().split(" ")
         word = split[0]
         
         if embeddingsDimension == None:
-            embeddingsDimension = len(split)-1
-            
+            embeddingsDimension = int(split[1]) #For portuguese embeddings, the first line stipulates the shape
+
         if (len(split)-1) != embeddingsDimension:  #Assure that all lines in the embeddings file are of the same length
-            print("ERROR: A line in the embeddings file had more or less  dimensions than expected. Skip token.")
+            #print("ERROR: A line in the embeddings file had more or less  dimensions than expected. Skip token.")
+            #print(line)
+            #print("embeddingsDimension", embeddingsDimension, "line dimension", len(split)-1)
+            emb_invalid += 1
             continue
         
         if len(word2Idx) == 0: #Add padding+unknown
@@ -115,9 +119,10 @@ def perpareDataset(embeddingsPath, datasetFiles, frequencyThresholdUnknownTokens
             if word not in word2Idx:                     
                 embeddings.append(vector)
                 word2Idx[word] = len(word2Idx)
-    
-    
-    
+
+    if emb_invalid > 0:
+        print('WARNING: %i invalid lines' % emb_invalid)
+
     # Extend embeddings file with new tokens 
     def createFD(filename, tokenIndex, fd, word2Idx):    
         for line in open(filename):

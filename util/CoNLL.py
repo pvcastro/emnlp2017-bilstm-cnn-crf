@@ -1,5 +1,6 @@
 from __future__ import print_function
 import os
+import traceback
 
 def conllWrite(outputPath, sentences, headers):
     """
@@ -44,12 +45,19 @@ def readCoNLL(inputPath, cols, commentSymbol=None, valTransformation=None):
             continue
         
         splits = line.split()
-        for colIdx, colName in cols.items():
-            val = splits[colIdx]
-            
-            if valTransformation != None:
-                val = valTransformation(colName, val, splits)
-            sentence[colName].append(val)  
+        if len(splits) > 0:
+            try:
+                for colIdx, colName in cols.items():
+                    val = splits[colIdx]
+
+                    if valTransformation != None:
+                        val = valTransformation(colName, val, splits)
+                    sentence[colName].append(val)
+            except IndexError as error:
+                print("splits", splits)
+                print("cols", cols.items())
+                print("TypeError:", error)
+                traceback.print_exc()
             
             
  

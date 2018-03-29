@@ -5,8 +5,9 @@
 .settings
 .pydevproject
 .project
+.idea
 
-
+embeddings/
 results_lichtenberg/
 pkl/
 alt/

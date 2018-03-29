@@ -241,7 +241,9 @@ class BiLSTM:
         casing2Idx = self.dataset['mappings']['casing']
         
         caseMatrix = np.identity(len(casing2Idx), dtype='float32')
-        
+
+        print(embeddings.shape)
+
         tokens = Sequential()
         tokens.add(Embedding(input_dim=embeddings.shape[0], output_dim=embeddings.shape[1],  weights=[embeddings], trainable=False, name='token_emd'))
         
